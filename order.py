@@ -1,8 +1,10 @@
-class Item:
-    def __init__(self, itemname, unit_type, unit_price):
-        self.itemname = itemname
-        self.unit_type = unit_type
-        self.unit_price = unit_price
+# class Item:
+#     def __init__(self, itemname, unit_type, unit_price):
+#         self.itemname = itemname
+#         self.unit_type = unit_type
+#         self.unit_price = unit_price
+
+from item import Item
 
 class Order:
     def __init__(self):
@@ -43,16 +45,20 @@ class Order:
                 finalPrice = item.unit_price - self.markdown[itemname]
 
             if itemname in self.specials:
-                total += self.cal_total_with_special(itemname, quantity, finalPrice)
+                if self.specials[itemname]["type"] == "BuyAndGet":
+                    total += self.cal_total_with_special_buyMgetN(itemname, quantity, finalPrice)
+                elif self.specials[itemname]["type"] == "bundle":
+                    total += self.cal_total_with_special_bundle(itemname, quantity, finalPrice)
+                    
             else:
-            
-                # print(f"add {itemname}, {finalPrice}, {quantity}")
                 total += finalPrice * quantity
         
         return total
     
-    def cal_total_with_special(self, itemname, quantity, finalPrice):
-        condition, discount_rate, limit = self.specials[itemname]
+    def cal_total_with_special_buyMgetN(self, itemname, quantity, finalPrice):
+        condition = self.specials[itemname]["condition"]
+        discount_rate = self.specials[itemname]["discount_rate"]
+        limit = self.specials[itemname]["limit"]
         total = 0
 
         if quantity < condition:
@@ -75,7 +81,21 @@ class Order:
         
         return total
 
-    
+    def cal_total_with_special_bundle(self, itemname, quantity, finalPrice):
+        bundleCnt = self.specials[itemname]["cnt"]
+        bundlePrice = self.specials[itemname]["price"]
+        total = 0
+        print("bundle:",bundleCnt, bundlePrice, quantity)
+
+        if quantity >= bundleCnt:
+            remaining = quantity % bundleCnt
+            total += remaining * finalPrice
+            total += (quantity // bundleCnt) * bundlePrice
+            print(remaining, quantity // bundleCnt)
+        else:
+            total += finalPrice * quantity
+        
+        return total
     
     
     def remove(self, itemname, quantity):
@@ -113,14 +133,14 @@ class Order:
         suppose unit price = $10
         Buy 1 get 1 free: 
             buy 1, pay $10
-            buy 2, pay $10
+            buy 2, pay $10 (special applied)
             buy 3, pay $20
-            buy 4, pay $20
+            buy 4, pay $20 (special applied)
 
         Buy 2 get 1 free:
             buy 1, pay $10
             buy 2, pay $20
-            buy 3, pay $20
+            buy 3, pay $20 (special applied)
             buy 4, pay $30
 
         Buy 2 get 1 half off: 
@@ -138,6 +158,9 @@ class Order:
         """
         if itemname not in self.itemList:
             raise KeyError("Item not exists.")
+        
+        if itemname in self.specials:
+            raise KeyError("Duplicate specials on same item")
 
         if priceoff < 1:
             condition = buyM
@@ -147,4 +170,26 @@ class Order:
             condition = buyM + getN
             discount_rate = getN / (buyM + getN)
 
-        self.specials[itemname] = [condition, discount_rate, limit]
+        # self.specials[itemname] = (condition, discount_rate, limit)
+        self.specials[itemname] = {
+            "type": "BuyAndGet",
+            "condition": condition,
+            "discount_rate": discount_rate,
+            "limit": limit
+        }
+
+
+    def create_special_bundle(self, itemname, bundleCnt, bundlePrice, limit=None):
+        if itemname not in self.itemList:
+            raise KeyError("Item not exists.")
+        
+        if itemname in self.specials:
+            raise KeyError("Duplicate specials on same item")
+        
+        # self.specials[itemname] = (bundleCnt, bundlePrice, limit)
+        self.specials[itemname] = {
+            "type": "bundle",
+            "cnt": bundleCnt,
+            "price": bundlePrice,
+            "limit": limit
+        }

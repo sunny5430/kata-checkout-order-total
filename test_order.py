@@ -53,10 +53,6 @@ def test_calTotal_WithMarkdown(order):
 def test_createSpecial(order):
     with pytest.raises(KeyError):
         order.create_special("C", 1, 1, 6)
-    
-    order.create_item("C", "unit", 10)
-    order.create_special("C", 1, 1, 6)
-
 
 # possible cases
     # does not meet condition
@@ -71,11 +67,13 @@ def test_calTotal_WithSpecial_buyMgetNfree(order):
     assert order.cal_total() == 11
     
     order.create_item("C", "unit", 10)
-    order.create_special("C", 1, 1)
+    order.create_special("C", 3, 2)
     order.scan("C")
     order.scan("C")
     order.scan("C")
-    assert order.cal_total() == 31
+    order.scan("C")
+    order.scan("C")
+    assert order.cal_total() == 41
 
 
 def test_calTotal_WithSpecial_limit(order):
@@ -113,3 +111,24 @@ def test_calTotal_WithMarkdown_WithSpecial_limit(order):
 
     order.remove("C", 1)
     assert order.cal_total() == 13
+
+
+def test_createSpecial_bundle(order):
+    order.create_special_bundle("A", 4, 10)
+    with pytest.raises(KeyError):
+        order.create_special("A", 5, 2)
+    with pytest.raises(KeyError):
+        order.create_special_bundle("A", 2, 5)
+
+def test_calTotal_WithSpecial_bundle(order):
+    order.create_special_bundle("A", 4, 10)
+    order.scan("A", 2)
+    assert order.cal_total() == 15
+
+    order.create_special_bundle("B", 2, 8)
+    order.scan("B")
+    assert order.cal_total() == 18
+
+    order.remove("B", 1)
+    assert order.cal_total() == 15
+
