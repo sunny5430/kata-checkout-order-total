@@ -10,7 +10,8 @@ def order():
     return order
 
 
-def test_createItem(order):
+def test_createItem():
+    order = Order()
     order.create_item("A", "weight", 3)
 
 def test_scanItem(order):
