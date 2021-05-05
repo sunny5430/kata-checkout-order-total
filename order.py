@@ -69,31 +69,34 @@ class Order:
             remaining = quantity % condition
             discount_quantity = quantity - remaining
         else: # quantity >= limit:
-            remaining = quantity % limit
+            remaining = quantity - limit
             discount_quantity = limit
         
         total += remaining * finalPrice
         total += discount_quantity * finalPrice * (1- discount_rate)
 
-        print("cal price with special", itemname, condition, discount_rate, total)
-        print("limit", limit)
-        print(discount_quantity, finalPrice, (1- discount_rate))
-        
         return total
 
     def cal_total_with_special_bundle(self, itemname, quantity, finalPrice):
         bundleCnt = self.specials[itemname]["cnt"]
         bundlePrice = self.specials[itemname]["price"]
+        limit = self.specials[itemname]["limit"]
         total = 0
         print("bundle:",bundleCnt, bundlePrice, quantity)
 
-        if quantity >= bundleCnt:
-            remaining = quantity % bundleCnt
-            total += remaining * finalPrice
-            total += (quantity // bundleCnt) * bundlePrice
-            print(remaining, quantity // bundleCnt)
-        else:
+        if quantity < bundleCnt:
             total += finalPrice * quantity
+            return total
+
+        if not limit or quantity < limit:
+            remaining = quantity % bundleCnt
+            numBundle = (quantity - remaining) // bundleCnt
+        else: #if limit and quantity >= limit:
+            remaining = quantity - limit
+            numBundle = limit // bundleCnt
+        
+        total += remaining * finalPrice
+        total += numBundle * bundlePrice
         
         return total
     
@@ -110,8 +113,6 @@ class Order:
             self.basket[itemname] -= quantity
         else:
             raise ValueError("Not enough quantity to remove.")
-
-        print(self.basket)
 
     
     def create_markdown(self, itemname, priceoff):

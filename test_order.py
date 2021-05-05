@@ -76,7 +76,11 @@ def test_calTotal_WithSpecial_buyMgetNfree(order):
     assert order.cal_total() == 41
 
 
-def test_calTotal_WithSpecial_limit(order):
+def test_calTotal_WithSpecial_buyMgetN_Xoff(order):
+    order.create_special("A", 2, 1, None, 0.6)
+    assert order.cal_total() == 9.2
+
+def test_calTotal_WithSpecial_buyMgetN_limit(order):
     order.create_item("C", "unit", 10)
     order.create_special("C", 2, 1, 6)
     order.scan("C")
@@ -93,12 +97,7 @@ def test_calTotal_WithSpecial_limit(order):
     order.remove("C", 2)
     assert order.cal_total() == approx(61)
 
-
-def test_calTotal_WithSpecial_buyMgetN_Xoff(order):
-    order.create_special("A", 2, 1, None, 0.6)
-    assert order.cal_total() == 9.2
-
-def test_calTotal_WithMarkdown_WithSpecial_limit(order):
+def test_calTotal_WithMarkdown_WithSpecial_buyMgetN_limit(order):
     order.create_item("C", "unit", 10)
     order.create_markdown("C", 9)
     order.create_special("C", 1, 1, 4)
@@ -122,6 +121,7 @@ def test_createSpecial_bundle(order):
 
 def test_calTotal_WithSpecial_bundle(order):
     order.create_special_bundle("A", 4, 10)
+    assert order.cal_total() == 11
     order.scan("A", 2)
     assert order.cal_total() == 15
 
@@ -132,3 +132,18 @@ def test_calTotal_WithSpecial_bundle(order):
     order.remove("B", 1)
     assert order.cal_total() == 15
 
+def test_calTotal_WithSpecial_bundle_limit(order):
+    # 4A1B
+    order.create_special_bundle("A", 2, 5, 2)
+    order.scan("A", 2)
+    assert order.cal_total() == 16
+
+    #4A1B -> 4A2B
+    order.create_special_bundle("B", 2, 8, 2)
+    assert order.cal_total() == 16
+    order.scan("B")
+    assert order.cal_total() == 19
+
+    #3A2B
+    order.remove("A", 1)
+    assert order.cal_total() == 16
