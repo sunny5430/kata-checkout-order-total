@@ -4,6 +4,7 @@ class Order:
         self.itemPrice = {}
         self.itemUnit = {}
         self.basket = {}
+        self.markdown = {}
     
     def create_item(self, itemname, unit_type, unit_price):
         self.itemPrice[itemname] = unit_price
@@ -24,13 +25,40 @@ class Order:
             else:
                 self.basket[itemname] = weight
         
-        print(self.basket)
-    
+
     def cal_total(self):
         total = 0
         for item, quantity in self.basket.items():
             print(item, quantity)
-            total += self.itemPrice[item] * quantity
+            if item in self.markdown:
+                finalPrice = self.itemPrice[item] - self.markdown[item]
+            else:
+                finalPrice = self.itemPrice[item]
+                
+            total += finalPrice * quantity
         
         return total
     
+    def remove(self, itemname, quantity):
+        if itemname not in self.itemPrice or itemname not in self.basket:
+            raise KeyError("Item not exists.")
+        
+        if self.itemUnit[itemname] == "unit" and type(quantity) != int:
+            raise ValueError("Item should be remove on UNIT basis.")
+
+        if self.basket[itemname] >= quantity:
+            self.basket[itemname] -= quantity
+        else:
+            raise ValueError("Not enough quantity to remove.")
+
+        print(self.basket)
+
+    def create_markdown(self, itemname, priceoff):
+        if priceoff < 0:
+            raise ValueError("Priceoff should be greater than 0")
+
+        if priceoff > self.itemPrice[itemname]:
+            raise ValueError("Priceoff greater than original price.")
+        self.markdown[itemname] = priceoff
+            
+
