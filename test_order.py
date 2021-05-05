@@ -1,4 +1,5 @@
 import pytest
+from pytest import approx
 from order import Order
 
 
@@ -64,7 +65,7 @@ def test_createSpecial(order):
         # less or equal to limit
         # greater than limit
 
-def test_calTotal_WithSpecial(order):
+def test_calTotal_WithSpecial_buyMgetNfree(order):
     
     order.create_special("B", 10, 1)
     assert order.cal_total() == 11
@@ -76,18 +77,28 @@ def test_calTotal_WithSpecial(order):
     order.scan("C")
     assert order.cal_total() == 31
 
+
 def test_calTotal_WithSpecial_limit(order):
     order.create_item("C", "unit", 10)
-    order.create_special("C", 1, 1, 4)
+    order.create_special("C", 2, 1, 6)
     order.scan("C")
     order.scan("C")
     order.scan("C")
     order.scan("C")
     order.scan("C")
-    assert order.cal_total() == 41
+    order.scan("C")
+    order.scan("C")
+    order.scan("C")
+    order.scan("C")
+    assert order.cal_total() == approx(81)
 
-    order.remove("C", 1)
-    assert order.cal_total() == 31
+    order.remove("C", 2)
+    assert order.cal_total() == approx(61)
+
+
+def test_calTotal_WithSpecial_buyMgetN_Xoff(order):
+    order.create_special("A", 2, 1, None, 0.6)
+    assert order.cal_total() == 9.2
 
 def test_calTotal_WithMarkdown_WithSpecial_limit(order):
     order.create_item("C", "unit", 10)
