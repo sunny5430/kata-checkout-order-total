@@ -97,7 +97,7 @@ def test_calTotal_Special_bundle_limit(order):
     assert order.cal_total() == 24
 
 
-def test_calTotal_WithMarkdown_WithSpecial_bundle_limit(order):
+def test_calTotal_Markdown_Special_bundle_limit(order):
     order.create_special_bundle("A", 2, 4, 2)
     
     # bundle is more favorable over markdown
