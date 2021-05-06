@@ -22,6 +22,7 @@ Run the tests on this project:
 pytest -v
 ```
 
+### Result
 After running above command, testing results should appear on the terminal, showing 15 tests are passed.
 ![This is a alt text.](/test_session.png)
 
@@ -32,12 +33,15 @@ Production codes are placed in `/src` folder.
 
 Testing files are placed in `/test` folder.
 Tests are separated into 2 files:
-1. `test_order.py` tests basic functions of the POS system. Users could always get current total by calling cal_total().
+1. `test_order.py` tests basic functions of the POS system. Users could always get current total by calling `cal_total()`.
 2. `test_order_cal_total.py` tests the pre-tax totals under different scenarios.
 
 
 ## Notes
-### Implemetations of specials
+### Implemetations of specials - Buy M for $ (bundle deals)
+An item can have **only 1 special** at the same time, but can have both markdown and special deals simultaneously. Hence, there could be scenarios that markdown is more favorable than bundle specials or vice versa. In this case, the POS system will automatically apply to the deal that is more favorable for the customer.
+
+### Implemetations of specials - Buy M Get N
 Following are the scenarios and the expected totals of an item applying **Buy M Get N free** and **Buy M Get N X off** specials.
 
 Suppose unit price = $10
