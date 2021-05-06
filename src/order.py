@@ -76,15 +76,15 @@ class Order:
 
             if itemname in self.specials:
                 if self.specials[itemname]["type"] == "BuyAndGet":
-                    total += self.cal_total_with_special_buyMgetN(itemname, quantity, finalPrice)
+                    total += self.__cal_total_with_special_buyMgetN(itemname, quantity, finalPrice)
                 elif self.specials[itemname]["type"] == "bundle":
-                    total += self.cal_total_with_special_bundle(itemname, quantity, finalPrice)
+                    total += self.__cal_total_with_special_bundle(itemname, quantity, finalPrice)
             else:
                 total += finalPrice * quantity
         
         return total
     
-    def cal_total_with_special_buyMgetN(self, itemname, quantity, finalPrice):
+    def __cal_total_with_special_buyMgetN(self, itemname, quantity, finalPrice):
         """
         Calculate and return pre-tax total for item applied to Buy M get N with X off discount.
         """
@@ -108,7 +108,7 @@ class Order:
 
         return total
 
-    def cal_total_with_special_bundle(self, itemname, quantity, finalPrice):
+    def __cal_total_with_special_bundle(self, itemname, quantity, finalPrice):
         """
         Calculate and return pre-tax total for item applied to Buy M for $X discount.
         If both markdown and bundle sale are applied to the item,
