@@ -160,33 +160,7 @@ class Order:
         - Buy M get N X off (limit K)
         One item can only be applied with one special deal.
         """
-        """
-        suppose unit price = $10
-        Buy 1 get 1 free: 
-            buy 1, pay $10
-            buy 2, pay $10 (special applied)
-            buy 3, pay $20
-            buy 4, pay $20 (special applied)
-
-        Buy 2 get 1 free:
-            buy 1, pay $10
-            buy 2, pay $20
-            buy 3, pay $20 (special applied)
-            buy 4, pay $30
-
-        Buy 2 get 1 half off: 
-            buy 1, pay $10
-            buy 2, pay $15 (25% off/ each)
-            buy 3, pay $25
-            buy 4, pay $30 (25% off/ each)
-
-        Buy 3 get 1 60% off:
-            buy 1, pay $10
-            buy 2, pay $20
-            buy 3, pay $24 (20% off/ each)
-            buy 4, pay $34
-
-        """
+        
         if itemname not in self.itemList:
             raise KeyError("Item not exists.")
         
